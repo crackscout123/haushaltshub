@@ -1,63 +1,60 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-primary-600 via-primary-500 to-indigo-600 flex items-center justify-center p-4">
+  <div class="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 flex items-center justify-center p-4">
     <div class="w-full max-w-md">
       <!-- Logo -->
       <div class="text-center mb-8">
-        <div class="inline-flex items-center justify-center w-16 h-16 bg-white/20 rounded-2xl backdrop-blur mb-4">
-          <svg class="w-9 h-9 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-          </svg>
+        <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-indigo-600 mb-4">
+          <span class="text-white font-bold text-2xl">H</span>
         </div>
-        <h1 class="text-3xl font-bold text-white">HaushaltsHub</h1>
-        <p class="text-primary-100 mt-1">Gemeinsam Finanzen im Griff</p>
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">HaushaltsHub</h1>
+        <p class="text-gray-500 dark:text-gray-400 mt-1">Willkommen zurück!</p>
       </div>
 
-      <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-8">
-        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-6">Anmelden</h2>
+      <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-800 p-8">
+        <form @submit.prevent="submit" class="space-y-5">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">E-Mail</label>
+            <input
+              v-model="form.email"
+              type="email"
+              autocomplete="email"
+              required
+              class="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition text-sm"
+              placeholder="du@beispiel.de"
+            />
+            <p v-if="form.errors.email" class="text-red-500 text-xs mt-1">{{ form.errors.email }}</p>
+          </div>
 
-        <form @submit.prevent="submit" class="space-y-4">
-          <InputField
-            label="E-Mail"
-            type="email"
-            v-model="form.email"
-            placeholder="deine@email.de"
-            :error="form.errors.email"
-            required
-            autocomplete="email"
-          />
-          <InputField
-            label="Passwort"
-            type="password"
-            v-model="form.password"
-            placeholder="••••••••"
-            :error="form.errors.password"
-            required
-            autocomplete="current-password"
-          />
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Passwort</label>
+            <input
+              v-model="form.password"
+              type="password"
+              autocomplete="current-password"
+              required
+              class="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition text-sm"
+              placeholder="••••••••"
+            />
+            <p v-if="form.errors.password" class="text-red-500 text-xs mt-1">{{ form.errors.password }}</p>
+          </div>
 
-          <div class="flex items-center justify-between">
-            <label class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 cursor-pointer">
-              <input type="checkbox" v-model="form.remember" class="rounded border-gray-300 text-primary-500 focus:ring-primary-500" />
-              Angemeldet bleiben
-            </label>
+          <div class="flex items-center gap-2">
+            <input id="remember" v-model="form.remember" type="checkbox" class="rounded border-gray-300 text-indigo-600" />
+            <label for="remember" class="text-sm text-gray-600 dark:text-gray-400">Angemeldet bleiben</label>
           </div>
 
           <button
             type="submit"
             :disabled="form.processing"
-            class="w-full py-3 px-4 bg-primary-500 hover:bg-primary-600 disabled:opacity-60 text-white font-semibold rounded-xl transition-colors shadow-sm"
+            class="w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-semibold rounded-lg transition text-sm"
           >
-            <span v-if="form.processing" class="flex items-center justify-center gap-2">
-              <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
-              Anmelden...
-            </span>
-            <span v-else>Anmelden</span>
+            {{ form.processing ? 'Anmelden...' : 'Anmelden' }}
           </button>
         </form>
 
         <p class="text-center text-sm text-gray-500 dark:text-gray-400 mt-6">
           Noch kein Konto?
-          <Link :href="route('register')" class="text-primary-500 hover:text-primary-600 font-medium">Registrieren</Link>
+          <Link :href="route('register')" class="text-indigo-600 hover:text-indigo-700 font-medium">Registrieren</Link>
         </p>
       </div>
     </div>
@@ -66,7 +63,6 @@
 
 <script setup>
 import { useForm, Link } from '@inertiajs/vue3';
-import InputField from '@/Components/InputField.vue';
 
 const form = useForm({
   email: '',
