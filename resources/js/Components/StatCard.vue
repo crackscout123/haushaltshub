@@ -1,27 +1,30 @@
 <template>
-  <div class="bg-white dark:bg-gray-900 rounded-2xl p-6 border border-gray-200 dark:border-gray-800 shadow-sm">
-    <div class="flex items-center justify-between mb-4">
-      <div :class="[iconBg, 'w-12 h-12 rounded-xl flex items-center justify-center']">
-        <slot name="icon" />
-      </div>
-      <span v-if="trend !== null" class="text-xs font-medium px-2 py-1 rounded-full"
-        :class="trend >= 0 ? 'text-green-700 bg-green-100 dark:text-green-300 dark:bg-green-900/40' : 'text-red-700 bg-red-100 dark:text-red-300 dark:bg-red-900/40'"
-      >
-        {{ trend >= 0 ? '+' : '' }}{{ trend }}%
+  <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm p-6">
+    <div class="flex items-center justify-between mb-3">
+      <span class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ label }}</span>
+      <span class="w-9 h-9 rounded-lg flex items-center justify-center text-lg" :class="iconBg">
+        {{ icon }}
       </span>
     </div>
-    <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">{{ label }}</p>
-    <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ value }}</p>
-    <p v-if="sub" class="text-xs text-gray-400 mt-1">{{ sub }}</p>
+    <p class="text-2xl font-bold" :class="valueClass">{{ formattedValue }}</p>
+    <p v-if="sub" class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ sub }}</p>
   </div>
 </template>
 
 <script setup>
-defineProps({
+import { computed } from 'vue';
+
+const props = defineProps({
   label: String,
-  value: String,
+  value: Number,
+  icon: String,
+  iconBg: { type: String, default: 'bg-indigo-50 dark:bg-indigo-900/30' },
+  valueClass: { type: String, default: 'text-gray-900 dark:text-white' },
+  currency: { type: String, default: 'EUR' },
   sub: String,
-  iconBg: { type: String, default: 'bg-primary-100 dark:bg-primary-900/40' },
-  trend: { type: Number, default: null },
+});
+
+const formattedValue = computed(() => {
+  return new Intl.NumberFormat('de-DE', { style: 'currency', currency: props.currency }).format(props.value || 0);
 });
 </script>
