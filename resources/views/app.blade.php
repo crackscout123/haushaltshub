@@ -4,11 +4,10 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title inertia>{{ config('app.name', 'HaushaltsHub') }}</title>
-        @routes
-        @vite(['resources/js/app.js'])
+        @vite(['resources/js/app.js', 'resources/css/app.css'])
         @inertiaHead
     </head>
-    <body class="h-full bg-gray-50 dark:bg-gray-950 font-sans antialiased">
+    <body class="h-full bg-gray-50 dark:bg-gray-950 antialiased">
         @inertia
     </body>
 </html>
