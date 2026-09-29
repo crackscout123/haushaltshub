@@ -1,84 +1,138 @@
 # 💰 HaushaltsHub
 
-A modern multi-user household expense tracker built with Laravel + Vue.js + Inertia.js.
+Ein moderner Multi-User Haushaltstracker mit gemeinsamem Dashboard, Einnahmen/Ausgaben-Verwaltung und dynamischen Charts.
 
 ## Features
 
-- 🏠 **Multi-Household** – Create households and invite other users
-- 👥 **Multi-User** – Each user manages their own income & expenses
-- 📊 **Shared Dashboard** – Beautiful charts showing combined household finances
-- 🔐 **Role System** – Owner, Admin, Member roles per household
-- 📱 **Responsive** – Works on mobile and desktop
-- 🌙 **Dark Mode** – Built-in dark mode support
+- 🏠 **Multi-Haushalt** – Haushalte erstellen und per Einladungscode beitreten
+- 👥 **Multi-User** – Jeder verwaltet seine eigenen Einnahmen & Ausgaben
+- 📊 **Gemeinsames Dashboard** – Monatliche KPIs, Trends-Chart, Kategorien-Doughnut, Budgetbalken, Mitgliederstatistiken
+- 🌙 **Dark Mode** – Automatisch via localStorage
+- 📱 **Responsiv** – Desktop & Mobile
+- 🔐 **Einfaches Rollensystem** – Owner, Member (v2: feingranulare Rechte)
 
 ## Tech Stack
 
-| Layer | Technology |
+| Layer | Technologie |
 |---|---|
 | Backend | Laravel 11 |
 | Frontend | Vue 3 + Inertia.js |
 | Styling | Tailwind CSS v4 |
 | Charts | Chart.js + vue-chartjs |
-| Database | SQLite / MySQL / PostgreSQL |
-| Auth | Laravel Breeze (Inertia) |
+| Datenbank | SQLite (default) / MySQL / PostgreSQL |
+| Auth | Custom (Laravel Breeze-Style) |
+| Deployment | Docker + Apache |
 
-## Quick Start
+## Schnellstart (lokal)
 
 ```bash
-# Clone & install
 git clone https://github.com/crackscout123/haushaltshub
 cd haushaltshub
+
 composer install
 npm install
 
-# Setup environment
 cp .env.example .env
 php artisan key:generate
 
-# Database (default: SQLite)
+# SQLite anlegen
+touch database/database.sqlite
+
 php artisan migrate --seed
 
-# Build & run
 npm run build
 php artisan serve
 ```
 
-## Docker
+Dann öffne: http://localhost:8000
+
+**Demo-Nutzer nach Seeding:**
+| E-Mail | Passwort |
+|---|---|
+| admin@example.com | password |
+| user@example.com | password |
+
+## Docker (empfohlen für Self-Hosting)
 
 ```bash
+# .env anlegen
+cp .env.example .env
+# APP_KEY setzen:
+php artisan key:generate --show
+# oder: openssl rand -base64 32
+
+# Starten
 docker compose up -d
+
+# Datenbank migieren & seeden (einmalig)
+docker compose exec app php artisan migrate --seed
 ```
 
-## Default Users (after seeding)
-
-| Email | Password | Role |
-|---|---|---|
-| admin@example.com | password | Admin |
-| user@example.com | password | User |
-
-## Environment Variables
+### Mit MySQL statt SQLite
 
 ```env
-# SQLite (default, zero config)
-DB_CONNECTION=sqlite
-
-# MySQL
 DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
+DB_HOST=db
 DB_PORT=3306
 DB_DATABASE=haushaltshub
-DB_USERNAME=root
-DB_PASSWORD=
-
-# PostgreSQL
-DB_CONNECTION=pgsql
-DB_HOST=127.0.0.1
-DB_PORT=5432
-DB_DATABASE=haushaltshub
-DB_USERNAME=postgres
-DB_PASSWORD=
+DB_USERNAME=haushalt
+DB_PASSWORD=secret
 ```
 
-## License
+### Hinter Nginx Proxy Manager
+
+Einfach den `haushaltshub`-Container auf Port 8000 als Proxy-Host eintragen, SSL via Let's Encrypt aktivieren.
+
+## Mit bestehendem Docker-Netzwerk verbinden
+
+```yaml
+# Am Ende von docker-compose.yml das externe Netzwerk einbinden:
+networks:
+  haushaltshub:
+    external: true
+    name: dein-proxy-netzwerk
+```
+
+## Projektstruktur
+
+```
+haushaltshub/
+├── app/
+│   ├── Http/Controllers/       # HouseholdController, TransactionController, Auth/
+│   ├── Models/                 # Household, Transaction, Category, Budget, User
+│   └── Policies/               # HouseholdPolicy
+├── database/
+│   ├── migrations/             # 5 Migrationen
+│   └── seeders/                # Demo-Daten
+├── resources/js/
+│   ├── Pages/
+│   │   ├── Auth/               # Login, Register
+│   │   ├── Households/         # Index, Create, Dashboard
+│   │   └── Transactions/       # Index
+│   ├── Layouts/AppLayout.vue
+│   └── Components/             # Card, StatCard, Modal, NavLink, Icons
+├── routes/
+│   ├── web.php
+│   └── auth.php
+├── docker-compose.yml
+└── Dockerfile
+```
+
+## Roadmap
+
+- [x] Auth (Login / Register)
+- [x] Haushalte erstellen & beitreten (Invite Code)
+- [x] Einnahmen & Ausgaben eintragen
+- [x] Dashboard mit Charts & Stats
+- [x] Dark Mode
+- [x] Docker-Support
+- [ ] Budgets UI (CRUD im Frontend)
+- [ ] Kategorien verwalten
+- [ ] CSV-Export
+- [ ] v2: Feingranulares Rechtesystem
+- [ ] v2: Wiederkehrende Transaktionen
+- [ ] v2: Jahresauswertung
+
+## Lizenz
 
 MIT

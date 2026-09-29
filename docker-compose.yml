@@ -1,0 +1,53 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: haushaltshub
+    restart: unless-stopped
+    environment:
+      APP_ENV: production
+      APP_KEY: ${APP_KEY}
+      APP_URL: ${APP_URL:-http://localhost:8000}
+      DB_CONNECTION: ${DB_CONNECTION:-sqlite}
+      DB_HOST: ${DB_HOST:-db}
+      DB_PORT: ${DB_PORT:-3306}
+      DB_DATABASE: ${DB_DATABASE:-haushaltshub}
+      DB_USERNAME: ${DB_USERNAME:-haushalt}
+      DB_PASSWORD: ${DB_PASSWORD:-secret}
+    volumes:
+      - ./storage:/var/www/html/storage
+      - ./database:/var/www/html/database
+    ports:
+      - "${APP_PORT:-8000}:80"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - haushaltshub
+
+  db:
+    image: mariadb:11
+    container_name: haushaltshub-db
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootsecret}
+      MARIADB_DATABASE: ${DB_DATABASE:-haushaltshub}
+      MARIADB_USER: ${DB_USERNAME:-haushalt}
+      MARIADB_PASSWORD: ${DB_PASSWORD:-secret}
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - haushaltshub
+
+volumes:
+  db_data:
+
+networks:
+  haushaltshub:
+    driver: bridge

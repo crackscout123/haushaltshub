@@ -25,6 +25,9 @@ const props = defineProps({
 });
 
 const formattedValue = computed(() => {
-  return new Intl.NumberFormat('de-DE', { style: 'currency', currency: props.currency }).format(props.value || 0);
+  if (props.currency === null) {
+    return String(props.value || 0);
+  }
+  return new Intl.NumberFormat('de-DE', { style: 'currency', currency: props.currency || 'EUR' }).format(props.value || 0);
 });
 </script>
