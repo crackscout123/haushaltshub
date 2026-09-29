@@ -1,44 +1,57 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-primary-600 via-primary-500 to-indigo-600 flex items-center justify-center p-4">
-    <div class="w-full max-w-lg">
-      <div class="text-center mb-6">
-        <h1 class="text-2xl font-bold text-white">Neuen Haushalt erstellen</h1>
-        <p class="text-primary-100 mt-1">Lade dann andere Personen per Einladungscode ein</p>
-      </div>
-
-      <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-8">
+  <AppLayout title="Neuer Haushalt" subtitle="Erstelle einen Haushalt für dich und deine Mitbewohner">
+    <div class="max-w-lg">
+      <Card>
         <form @submit.prevent="submit" class="space-y-5">
-          <InputField label="Haushalt-Name" v-model="form.name" placeholder="z.B. WG Musterstraße" :error="form.errors.name" required />
-          <InputField label="Beschreibung (optional)" type="textarea" v-model="form.description" placeholder="Kurze Beschreibung..." :error="form.errors.description" />
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Währung</label>
-            <InputField type="select" v-model="form.currency" :error="form.errors.currency">
-              <option value="EUR">EUR – Euro</option>
-              <option value="USD">USD – US-Dollar</option>
-              <option value="CHF">CHF – Schweizer Franken</option>
-              <option value="GBP">GBP – Britisches Pfund</option>
-              <option value="PLN">PLN – Polnischer Złoty</option>
-            </InputField>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Name *</label>
+            <input v-model="form.name" type="text" required placeholder="z.B. WG Musterstraße"
+              class="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition text-sm" />
+            <p v-if="form.errors.name" class="text-red-500 text-xs mt-1">{{ form.errors.name }}</p>
           </div>
 
-          <div class="flex gap-3 pt-2">
-            <Link :href="route('households.index')" class="flex-1 py-3 px-4 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-xl text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-center">
-              Abbrechen
-            </Link>
-            <button type="submit" :disabled="form.processing" class="flex-1 py-3 px-4 bg-primary-500 hover:bg-primary-600 disabled:opacity-60 text-white font-semibold rounded-xl transition-colors">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Beschreibung</label>
+            <textarea v-model="form.description" rows="3" placeholder="Optional..."
+              class="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition text-sm resize-none" />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Währung</label>
+            <select v-model="form.currency"
+              class="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition text-sm">
+              <option value="EUR">€ EUR – Euro</option>
+              <option value="USD">$ USD – US-Dollar</option>
+              <option value="CHF">CHF – Schweizer Franken</option>
+              <option value="GBP">£ GBP – Britisches Pfund</option>
+              <option value="PLN">zł PLN – Polnischer Zloty</option>
+            </select>
+          </div>
+
+          <div class="flex gap-3 justify-end pt-2">
+            <Link :href="route('households.index')" class="px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition">Abbrechen</Link>
+            <button type="submit" :disabled="form.processing" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-sm font-semibold rounded-lg transition">
               {{ form.processing ? 'Erstellen...' : 'Haushalt erstellen' }}
             </button>
           </div>
         </form>
-      </div>
+      </Card>
     </div>
-  </div>
+  </AppLayout>
 </template>
 
 <script setup>
-import { Link, useForm } from '@inertiajs/vue3';
-import InputField from '@/Components/InputField.vue';
+import { useForm, Link } from '@inertiajs/vue3';
+import AppLayout from '@/Layouts/AppLayout.vue';
+import Card from '@/Components/Card.vue';
 
-const form = useForm({ name: '', description: '', currency: 'EUR' });
-function submit() { form.post(route('households.store')); }
+const form = useForm({
+  name: '',
+  description: '',
+  currency: 'EUR',
+});
+
+function submit() {
+  form.post(route('households.store'));
+}
 </script>
